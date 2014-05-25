@@ -10,9 +10,22 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 
+/* note temporaire :
+ * 
+ * par ce socket vont transiter :
+ * 
+ *  - en upload : 
+ *    les valeurs contenues dans ref.txt
+ *    (n° de frame, coordonnées x et y du doigt sur l'écran, code pour la position clé suivante, code pour le type d'action)
+ *    
+ *  - en download :
+ *    les valeurs nécessaires pour construire l'overlay de toutes les images
+ *    (n° des frames, coordonnées de placement des calques, valeurs de zoom des éléments)
+ *  
+ */
+
 public class SocketClient {
-	
-	//public void newSocketClient() throws IOException{
+
 	public static void main (String args[]) throws IOException{
 		int port = 8095;
 		Socket s = new Socket();

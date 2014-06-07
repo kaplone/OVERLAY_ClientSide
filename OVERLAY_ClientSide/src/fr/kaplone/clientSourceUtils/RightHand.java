@@ -1,4 +1,4 @@
-package fr.kaplone.sourceUtils;
+package fr.kaplone.clientSourceUtils;
 
 import java.awt.image.BufferedImage;
 import java.io.File;

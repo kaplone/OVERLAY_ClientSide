@@ -1,4 +1,4 @@
-package fr.kaplone.sourceUtils;
+package fr.kaplone.clientSourceUtils;
 
 //TODO voir  : 
 //             java.awt.geom.Point2D.Double

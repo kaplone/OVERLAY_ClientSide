@@ -8,11 +8,11 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-public class Principal {
+public class PrincipalClient {
 
 	public static void main(String[] args) throws IOException {
 		
-		File path = new File("images/images_source");
+		File path = new File("images/source_pictures");
 		File pathOut = new File("images/images_out");
 		
 		BufferedImage device = ImageIO.read(new File(path, "Main_F_iPhones_1.png"));

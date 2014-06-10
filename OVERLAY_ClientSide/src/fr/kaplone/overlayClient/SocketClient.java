@@ -5,6 +5,8 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
+import java.util.Timer;
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
@@ -26,7 +28,7 @@ import java.io.PrintStream;
 
 public class SocketClient {
 
-	public static void main (String args[]) throws IOException{
+	public static void main (String args[]) throws IOException, InterruptedException{
 		int port = 8095;
 		Socket s = new Socket();
 		String host = "localhost";
@@ -39,7 +41,6 @@ public class SocketClient {
 	    {
 	    s.connect(new InetSocketAddress(host , port));
 	    outStream = new PrintStream(s.getOutputStream());
-        outStream.flush();
         inStream = new BufferedReader(new InputStreamReader(s.getInputStream()));
         }
 
@@ -56,8 +57,18 @@ public class SocketClient {
 	    Scanner sc = new Scanner(new File("records/ref.txt"));
         while (sc.hasNextLine()){
             outStream.println(sc.nextLine());
+            outStream.flush();
+            outStream.close();
         }
         sc.close();
+
+        Scanner sc2 = new Scanner(inStream);
+        while (sc2.hasNextLine()){
+        	System.out.println("$");
+            System.out.println(sc2.nextLine());
+        }
+        inStream.close();
+        sc2.close();
     }
 
 }

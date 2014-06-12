@@ -1,16 +1,32 @@
 package fr.kaplone.overlayClient;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.Timer;
+
+import javax.swing.Timer;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringReader;
 
 /* note temporaire :
  * 
@@ -32,43 +48,87 @@ public class SocketClient {
 		int port = 8095;
 		Socket s = new Socket();
 		String host = "localhost";
-		
-		PrintStream outStream = null;
-        BufferedReader inStream = null;
-        String message = null;
-		
-		try
-	    {
-	    s.connect(new InetSocketAddress(host , port));
-	    outStream = new PrintStream(s.getOutputStream());
-        inStream = new BufferedReader(new InputStreamReader(s.getInputStream()));
-        }
 
-	     
-	    //Host not found
-	    catch (UnknownHostException e) 
-	    {
-	        System.err.println("Don't know about host : " + host);
-	        System.exit(1);
-	    }
-	     
-	    System.out.println("Connected");
-	    
-	    Scanner sc = new Scanner(new File("records/ref.txt"));
-        while (sc.hasNextLine()){
-            outStream.println(sc.nextLine());
-            outStream.flush();
-            outStream.close();
-        }
-        sc.close();
+		OutputStream outWriter;
+		BufferedReader inReader;
 
-        Scanner sc2 = new Scanner(inStream);
-        while (sc2.hasNextLine()){
-        	System.out.println("$");
-            System.out.println(sc2.nextLine());
-        }
-        inStream.close();
-        sc2.close();
-    }
+		try{
+			s.connect(new InetSocketAddress(host , port));
+			outWriter = s.getOutputStream();
+			inReader = new BufferedReader(new InputStreamReader(s.getInputStream()));
 
+			System.out.println("Connected");
+
+			Path path = Paths.get("records/ref.txt");
+			byte[] data = Files.readAllBytes(path);
+			boolean boucle = true;
+
+			for (int i = 0; i < data.length; i++){
+				outWriter.write(data[i]);
+			}
+			outWriter.write(-1);
+			outWriter.flush();
+
+			System.out.println("fin de l'envoi");
+			boucle = false; 
+			System.out.println("envoi client->serveur clos");  
+
+			int z;
+			boolean boucle2 = true;
+			int lecture2;
+			Scanner scan = null;
+			ArrayList<ArrayList<Integer>> ca = new ArrayList<ArrayList<Integer>>();
+			ArrayList<Integer> cl = new ArrayList<Integer>();
+			ArrayList<Integer> datas = new ArrayList<Integer>();
+
+			StringBuilder result = new StringBuilder(datas.size());
+
+			while (boucle2){
+				lecture2 = inReader.read();
+
+				if(lecture2 != -1){
+					System.out.println("début de la lecture coté client : ");
+
+					while (true){
+						if (lecture2 == 65533) break;
+						result.append(Character.toChars(lecture2)[0]);
+						lecture2 = inReader.read();
+					}
+
+					boucle2 = false;
+					String lectureString = result.toString();
+					System.out.println(lectureString);
+
+					BufferedReader lignes = new BufferedReader(new StringReader(lectureString));
+
+					String ligne = lignes.readLine();
+					while (ligne != null){
+						System.out.println(ligne);
+						scan = new Scanner(ligne);
+						while (scan.hasNextInt()){
+							z = scan.nextInt();
+							cl.add(z);
+						}
+						ca.add(cl);   
+						ligne = lignes.readLine();
+						cl = new ArrayList<Integer>();
+						scan.close();
+					}
+					//break;
+
+				}
+				System.out.println("cloture de la reception des datas sur le serveur");
+				scan.close();
+				boucle = false; 
+
+			}
+		}
+
+		//Host not found
+		catch (UnknownHostException e) 
+		{
+			System.err.println("Don't know about host : " + host);
+			System.exit(1);
+		}
+	}
 }

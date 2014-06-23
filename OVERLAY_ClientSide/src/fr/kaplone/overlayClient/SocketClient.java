@@ -69,9 +69,7 @@ public class SocketClient {
 			outWriter.write(-1);
 			outWriter.flush();
 
-			System.out.println("fin de l'envoi");
-			boucle = false; 
-			System.out.println("envoi client->serveur clos");  
+			boucle = false;  
 
 			int z;
 			boolean boucle2 = true;
@@ -87,8 +85,6 @@ public class SocketClient {
 				lecture2 = inReader.read();
 
 				if(lecture2 != -1){
-					System.out.println("début de la lecture coté client : ");
-
 					while (true){
 						if (lecture2 == 65533) break;
 						result.append(Character.toChars(lecture2)[0]);
@@ -97,13 +93,11 @@ public class SocketClient {
 
 					boucle2 = false;
 					String lectureString = result.toString();
-					System.out.println(lectureString);
 
 					BufferedReader lignes = new BufferedReader(new StringReader(lectureString));
 
 					String ligne = lignes.readLine();
 					while (ligne != null){
-						System.out.println(ligne);
 						scan = new Scanner(ligne);
 						while (scan.hasNextInt()){
 							z = scan.nextInt();
@@ -117,7 +111,6 @@ public class SocketClient {
 					//break;
 
 				}
-				System.out.println("cloture de la reception des datas sur le serveur");
 				scan.close();
 				boucle = false; 
 
